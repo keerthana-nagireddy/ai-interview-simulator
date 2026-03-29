@@ -1,7 +1,7 @@
 ---
 
 title: AI Interview Simulator
-emoji: 🎤
+emoji: "🎤"
 colorFrom: blue
 colorTo: indigo
 sdk: docker
@@ -89,7 +89,7 @@ ai-interview-simulator/
 ## 🔧 Setup
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/keerthana-nagireddy/ai-interview-simulator.git
 cd ai-interview-simulator
 pip install -r requirements.txt
 ```
@@ -203,4 +203,4 @@ It bridges:
 
 ## 📄 License
 
-MIT
+MIT License
