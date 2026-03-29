@@ -66,7 +66,7 @@ Agents must demonstrate:
 
 ## 🗂️ Project Structure
 
-```
+```text
 ai-interview-simulator/
 │
 ├── interview_env/
