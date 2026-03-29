@@ -1,0 +1,26 @@
+AI Interview Simulator - Baseline Results
+
+Generated using inference.py baseline evaluation
+Environment: OpenEnv AI Interview Simulator
+
+Model: meta-llama/Llama-3.1-8B-Instruct
+
+==================================================
+
+Task: junior_behavioral
+Final Score: 0.9192
+Status: PASSED
+
+Task: mid_technical
+Final Score: 0.7622
+Status: PASSED
+
+Task: senior_system_design
+Final Score: 0.6592
+Status: PASSED
+
+==================================================
+
+Average Score: 0.7802
+
+All tasks successfully completed.

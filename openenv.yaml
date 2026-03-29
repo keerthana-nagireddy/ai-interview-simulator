@@ -1,0 +1,129 @@
+name: ai-interview-simulator
+version: "1.0.0"
+description: >
+  An OpenEnv environment that simulates real-world job interviews.
+  An AI agent plays the role of a job candidate, receiving interview
+  questions and providing text responses. A deterministic grader scores
+  each answer on relevance, structure, depth, and professionalism,
+  providing partial rewards throughout the episode.
+
+tags:
+  - openenv
+  - interview
+  - nlp
+  - hiring
+  - text-generation
+  - rl-environment
+  - behavioral
+  - technical
+
+author: "AI Interview Simulator Team"
+license: MIT
+
+# ── OpenEnv interface ──────────────────────────────────────────────────────
+interface:
+  reset:
+    description: "Start a new interview episode. Returns the first question."
+    input:
+      task_id:
+        type: string
+        enum: [junior_behavioral, mid_technical, senior_system_design]
+        default: junior_behavioral
+    output: InterviewObservation
+
+  step:
+    description: "Submit the candidate's answer. Returns next question + reward."
+    input:
+      response:
+        type: string
+        description: "The candidate's spoken answer (1–2000 chars)."
+    output: StepResult   # {observation, reward, done, info}
+
+  state:
+    description: "Full serialisable environment state for debugging / checkpointing."
+    output: InterviewState
+
+# ── Observation space ──────────────────────────────────────────────────────
+observation_space:
+  type: object
+  fields:
+    task_id:            {type: string}
+    job_title:          {type: string}
+    company_context:    {type: string}
+    difficulty:         {type: string, enum: [easy, medium, hard]}
+    current_question:   {type: string, description: "The question the agent must answer next."}
+    question_number:    {type: integer, description: "1-indexed position."}
+    total_questions:    {type: integer}
+    stage:              {type: string, enum: [intro, behavioral, technical, situational, closing, complete]}
+    previous_qa:        {type: array, items: {question: string, answer: string, stage: string, question_score: float}}
+    cumulative_score:   {type: float, description: "Sum of per-step rewards so far."}
+    time_elapsed:       {type: float, description: "Seconds since reset()."}
+    interview_complete: {type: boolean}
+
+# ── Action space ───────────────────────────────────────────────────────────
+action_space:
+  type: object
+  fields:
+    response:
+      type: string
+      min_length: 1
+      max_length: 2000
+      description: "The candidate's free-text answer to the current question."
+
+# ── Reward ─────────────────────────────────────────────────────────────────
+reward:
+  range: [-0.05, 1.0]
+  description: >
+    Per-step reward is the weighted sum of four grader dimensions
+    (relevance 35%, structure 25%, depth 25%, professionalism 15%).
+    A small penalty (−0.05) is applied when the response exceeds 2000 chars.
+    The episode final score is the question-weight-adjusted mean of all step rewards.
+  partial_credit: true
+  dimensions:
+    relevance:       {weight: 0.35, range: [0, 1]}
+    structure:       {weight: 0.25, range: [0, 1]}
+    depth:           {weight: 0.25, range: [0, 1]}
+    professionalism: {weight: 0.15, range: [0, 1]}
+
+# ── Tasks ──────────────────────────────────────────────────────────────────
+tasks:
+  - id: junior_behavioral
+    name: "Junior Software Engineer — Behavioral Interview"
+    difficulty: easy
+    questions: 4
+    pass_threshold: 0.60
+    description: >
+      Entry-level behavioral interview. Questions focus on self-introduction,
+      debugging experience, project pride, and handling code review feedback.
+      Graded on STAR method, relevance, and professionalism.
+    expected_baseline_score: 0.55
+
+  - id: mid_technical
+    name: "Mid-Level Full-Stack Engineer — Technical Interview"
+    difficulty: medium
+    questions: 5
+    pass_threshold: 0.60
+    description: >
+      Technical + behavioral interview for a mid-level role. Topics include
+      REST vs GraphQL, JavaScript event loop, SQL optimisation, React performance,
+      and deadline management. Requires technical accuracy and concrete examples.
+    expected_baseline_score: 0.48
+
+  - id: senior_system_design
+    name: "Senior Software Engineer — System Design & Leadership"
+    difficulty: hard
+    questions: 6
+    pass_threshold: 0.60
+    description: >
+      Advanced interview covering distributed rate limiting, event-driven order
+      processing, system ownership, technical disagreement, mentoring, and
+      production incident diagnosis. Requires architectural depth and leadership.
+    expected_baseline_score: 0.40
+
+# ── Deployment ─────────────────────────────────────────────────────────────
+deployment:
+  platform: huggingface-spaces
+  space_sdk: docker
+  port: 7860
+  health_endpoint: /health
+  api_endpoint: /step

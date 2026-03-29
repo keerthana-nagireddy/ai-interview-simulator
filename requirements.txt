@@ -1,0 +1,22 @@
+# AI Interview Simulator — Python Dependencies
+# Pinned for reproducibility
+
+# OpenEnv models & validation
+pydantic>=2.5.0,<3.0.0
+
+# API & web serving
+fastapi>=0.109.0,<1.0.0
+uvicorn[standard]>=0.27.0,<1.0.0
+gradio>=4.19.0,<5.0.0
+
+# LLM inference (OpenAI-compatible client)
+openai>=1.12.0,<2.0.0
+
+# HTTP utilities
+httpx>=0.26.0,<1.0.0
+
+# YAML parsing (for openenv.yaml)
+pyyaml>=6.0.1,<7.0.0
+
+# Type support
+typing_extensions>=4.9.0
