@@ -8,13 +8,12 @@ sdk: docker
 pinned: false
 license: mit
 tags:
-
-* openenv
-* interview
-* rl-environment
-* nlp
-* hiring
-  app_port: 7860
+  - openenv
+  - interview
+  - rl-environment
+  - nlp
+  - hiring
+app_port: 7860
 
 ---
 
